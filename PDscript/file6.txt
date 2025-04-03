@@ -1,0 +1,40 @@
+
+set pin_lst {
+    {M2 {value_o[5] easter_egg[1] address[4] easter_egg[0] value_o[4] clk_i DataOrReg}}
+    {M6 {value_o[7] address[0] instr_i[1] reset}}
+    {M4 {value_o[3] instr_i[7]  instr_i[6] value_o[2] address[3]}}
+}
+set start_x_M2 443.19
+set start_y_M2 876.96
+set start_x_M4 450.19
+set start_y_M4 876.96
+set start_x_M6 463.19
+set start_y_M6 876.96
+
+set end_x 730.81
+foreach metal_pins $pin_lst {
+    lassign $metal_pins metal pins
+    if {$metal == "M2"} {
+        set start_x $start_x_M2
+        set start_y $start_y_M2
+        set spacing 47
+    } elseif {$metal == "M4"} {
+        set start_x $start_x_M4
+        set start_y $start_y_M4
+        set spacing 17
+    } elseif {$metal == "M6"} {
+        set start_x $start_x_M6
+        set start_y $start_y_M6
+        set spacing 27
+    } 
+    set current_x $start_x
+    foreach pin $pins {
+        if {$current_x > $end_x} {
+            break
+        }
+       # set cmd [list editPin -side TOP -layer $metal -fixedPin 1 -fixOverlap 1 -spreadtype START -start "$current_x $start_y" -spacing $spacing -pin $pin]
+        set cmd "editPin -side TOP -layer $metal -fixedPin 1 -fixOverlap 1 -spreadtype START -start {$current_x $start_y} -spacing $spacing -pin $pin"
+        eval $cmd
+        set current_x [expr {$current_x + $spacing}]
+    }
+}
